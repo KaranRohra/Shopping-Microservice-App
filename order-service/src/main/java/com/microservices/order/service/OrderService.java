@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.microservices.order.client.InventoryClient;
 import com.microservices.order.dto.OrderRequestDto;
 import com.microservices.order.dto.OrderResponseDto;
 import com.microservices.order.model.Order;
@@ -16,8 +17,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderService {
   private final OrderRepository orderRepository;
+  private final InventoryClient inventoryClient;
 
   public void placeOrder(OrderRequestDto orderRequestDto) {
+    boolean isInStock = inventoryClient.isInStock(orderRequestDto.skuCode(), orderRequestDto.quantity());
+    if (!isInStock) {
+      throw new RuntimeException("Product is out of stock");
+    }
+
     Order order = new Order();
     order.setOrderNumber(UUID.randomUUID().toString());
     order.setSkuCode(orderRequestDto.skuCode());

@@ -1,8 +1,10 @@
 package com.microservices.order.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,9 +26,13 @@ public class OrderController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public String placeOrder(@RequestBody OrderRequestDto orderRequestDto) {
-    orderService.placeOrder(orderRequestDto);
-    return "Order placed successfully!";
+  public ResponseEntity<Map<String, ?>> placeOrder(@RequestBody OrderRequestDto orderRequestDto) {
+    try {
+      orderService.placeOrder(orderRequestDto);
+      return ResponseEntity.ok(Map.of("message", "Order placed successfully"));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+    }
   }
 
   @GetMapping
