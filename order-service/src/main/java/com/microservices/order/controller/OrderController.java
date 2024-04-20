@@ -25,11 +25,10 @@ public class OrderController {
   private final OrderService orderService;
 
   @PostMapping
-  @ResponseStatus(HttpStatus.CREATED)
   public ResponseEntity<Map<String, ?>> placeOrder(@RequestBody OrderRequestDto orderRequestDto) {
     try {
       orderService.placeOrder(orderRequestDto);
-      return ResponseEntity.ok(Map.of("message", "Order placed successfully"));
+      return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Order placed successfully!"));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
     }
